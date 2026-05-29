@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEED — 魚三楼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a1612;
+      --paper: #f5f0e8;
+      --gold: #b8965a;
+      --fade: #8a7d6e;
+      --line: #d4c9b0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px 80px;
+    }
+
+    .seed-mark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--fade);
+      text-transform: uppercase;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeIn 1s ease 0.2s forwards;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 360px;
+      background: white;
+      border: 1px solid var(--line);
+      padding: 40px 32px;
+      opacity: 0;
+      animation: fadeIn 1s ease 0.5s forwards;
+    }
+
+    .place-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--ink);
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .place-name-ja {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--fade);
+      letter-spacing: 0.1em;
+      margin-bottom: 24px;
+    }
+
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      margin-bottom: 24px;
+    }
+
+    .timestamp {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      color: var(--fade);
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .weather-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .temp {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .weather-desc {
+      font-size: 12px;
+      color: var(--fade);
+      letter-spacing: 0.05em;
+    }
+
+    .description {
+      font-size: 13px;
+      line-height: 2;
+      color: var(--ink);
+      font-weight: 300;
+      margin-bottom: 32px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 20px 0;
+    }
+
+    .message {
+      font-size: 12px;
+      color: var(--fade);
+      line-height: 1.8;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-footer {
+      margin-top: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .badge-id {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      color: var(--line);
+      letter-spacing: 0.1em;
+    }
+
+    .seed-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-style: italic;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+    }
+
+    .loading {
+      font-size: 12px;
+      color: var(--fade);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="seed-mark">Reality Protocol · SEED</div>
+
+  <div class="card">
+    <div class="place-name">Uosanrou</div>
+    <div class="place-name-ja">魚三楼</div>
+    <div class="divider"></div>
+
+    <div class="timestamp" id="timestamp">読み込み中...</div>
+
+    <div class="weather-row">
+      <div class="temp" id="temp">--</div>
+      <div class="weather-desc" id="weather-desc" style="font-size:12px;color:var(--fade);">--</div>
+    </div>
+
+    <div class="description">
+      1868年、鳥羽伏見の戦い。<br>
+      この建物の壁には今もその弾痕が残る。<br>
+      あなたは今日、その場所に立った。
+    </div>
+
+    <div class="message">
+      この記録は変更されない。<br>
+      あなたがここにいた事実は、消えない。
+    </div>
+
+    <div class="badge-footer">
+      <div class="badge-id" id="badge-id">SEED-USR-001</div>
+      <div class="seed-logo">SEED</div>
+    </div>
+  </div>
+
+  <script>
+    // ---- 設定 ----
+    const API_KEY = 'df37717c9cd19e230fa44ec083db7edf';
+    const LAT = 34.9333;
+    const LON = 135.7667;
+    // -------------
+
+    // 日時を表示
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('ja-JP', {
+      year: 'numeric', month: 'long', day: 'numeric',
+      weekday: 'long'
+    });
+    const timeStr = now.toLocaleTimeString('ja-JP', {
+      hour: '2-digit', minute: '2-digit'
+    });
+    document.getElementById('timestamp').textContent = `${dateStr}　${timeStr}`;
+
+    // バッジIDを生成
+    const id = 'SEED-USR-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    document.getElementById('badge-id').textContent = id;
+
+    // 天気を取得
+    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`)
+      .then(res => res.json())
+      .then(data => {
+        const temp = Math.round(data.main.temp);
+        const desc = data.weather[0].description;
+        document.getElementById('temp').textContent = temp + '°';
+        document.getElementById('weather-desc').textContent = desc;
+      })
+      .catch(() => {
+        document.getElementById('temp').textContent = '--°';
+        document.getElementById('weather-desc').textContent = '取得できませんでした';
+      });
+  </script>
+
+</body>
+</html>
