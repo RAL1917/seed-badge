@@ -496,7 +496,7 @@
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) showError('メールアドレスまたはパスワードが違います');
     }
-
+  
     // ---- メール 新規登録 ----
     async function signUpWithEmail() {
       const email = document.getElementById('email-input').value;
