@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SEED — 魚三楼</title>
+  <title>SEED - 魚三楼</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 
-  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -20,7 +19,11 @@
       --error: #c0392b;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
       background: var(--paper);
@@ -148,7 +151,6 @@
       letter-spacing: 0.1em;
     }
 
-    /* 認証フォーム */
     .auth-section {
       border-top: 1px solid var(--line);
       padding-top: 24px;
@@ -181,7 +183,9 @@
       letter-spacing: 0.05em;
     }
 
-    .btn:hover { background: var(--paper); }
+    .btn:hover {
+      background: var(--paper);
+    }
 
     .btn-primary {
       background: var(--ink);
@@ -189,7 +193,9 @@
       border-color: var(--ink);
     }
 
-    .btn-primary:hover { background: #2d2620; }
+    .btn-primary:hover {
+      background: #2d2620;
+    }
 
     .divider-text {
       text-align: center;
@@ -217,15 +223,17 @@
       outline: none;
     }
 
-    .input:focus { border-color: var(--gold); }
+    .input:focus {
+      border-color: var(--gold);
+    }
 
     .error-msg {
       font-size: 11px;
       color: var(--error);
       margin-top: 8px;
+      line-height: 1.6;
     }
 
-    /* ログイン済みの記録表示 */
     .record-section {
       border-top: 1px solid var(--line);
       padding-top: 24px;
@@ -243,7 +251,7 @@
       color: var(--ink);
       padding: 8px 0;
       border-bottom: 1px solid var(--line);
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Cormorant Garamond', 'Noto Serif JP', serif;
       letter-spacing: 0.05em;
     }
 
@@ -269,6 +277,7 @@
       cursor: pointer;
       letter-spacing: 0.05em;
       text-decoration: underline;
+      font-family: 'Noto Serif JP', serif;
     }
 
     .first-visitor-badge {
@@ -282,17 +291,22 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
 <body>
-
   <div class="seed-mark">Reality Protocol · SEED</div>
 
   <div class="card">
-    <!-- 場所情報（常に表示） -->
     <div class="place-name">Uosanrou</div>
     <div class="place-name-ja">魚三楼</div>
     <div class="divider"></div>
@@ -320,31 +334,29 @@
       <div class="seed-logo">SEED</div>
     </div>
 
-    <!-- 認証セクション（未ログイン時） -->
     <div class="auth-section" id="auth-section">
       <div class="auth-title">記録を残すにはサインインしてください</div>
 
       <div class="auth-buttons">
-        <button class="btn" onclick="signInWithGoogle()">Googleでサインイン</button>
-        <button class="btn" onclick="signInWithApple()">Appleでサインイン</button>
+        <button class="btn" type="button" onclick="signInWithGoogle()">Googleでサインイン</button>
+        <button class="btn" type="button" onclick="signInWithApple()">Appleでサインイン</button>
       </div>
 
       <div class="divider-text">または</div>
 
       <div class="input-group">
-        <input class="input" type="email" id="email-input" placeholder="メールアドレス">
-        <input class="input" type="password" id="password-input" placeholder="パスワード（6文字以上）">
+        <input class="input" type="email" id="email-input" placeholder="メールアドレス" autocomplete="email">
+        <input class="input" type="password" id="password-input" placeholder="パスワード（6文字以上）" autocomplete="current-password">
       </div>
 
       <div class="auth-buttons">
-        <button class="btn btn-primary" onclick="signInWithEmail()">サインイン</button>
-        <button class="btn" onclick="signUpWithEmail()">新規登録</button>
+        <button class="btn btn-primary" type="button" onclick="signInWithEmail()">サインイン</button>
+        <button class="btn" type="button" onclick="signUpWithEmail()">新規登録</button>
       </div>
 
       <div class="error-msg" id="auth-error"></div>
     </div>
 
-    <!-- 記録セクション（ログイン済み時） -->
     <div class="record-section" id="record-section" style="display:none;">
       <div id="first-visitor-display"></div>
       <div class="visit-count" id="visit-count">--</div>
@@ -353,48 +365,48 @@
       <div class="record-title" style="margin-top:20px;">来訪記録</div>
       <div id="visit-history"></div>
 
-      <button class="logout-btn" onclick="signOut()">サインアウト</button>
+      <button class="logout-btn" type="button" onclick="signOut()">サインアウト</button>
     </div>
   </div>
 
   <script>
-    // ============================================================
-    // 設定 — ここを自分の値に書き換える
-    // ============================================================
     const SUPABASE_URL = 'https://jlwmkrjmhbvuazcvcaxn.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsd21rcmptaGJ2dWF6Y3ZjYXhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNDM3MjMsImV4cCI6MjA5NTcxOTcyM30.KBSoZqxpwpjWPqTxHsdBuVqPWfZ56LQwdD74wQT7mMM';
     const WEATHER_API_KEY = 'df37717c9cd19e230fa44ec083db7edf';
-    const PLACE_ID = 'uosanrou-fushimi'; // この場所のID
+    const PLACE_ID = 'uosanrou-fushimi';
     const LAT = 34.9333;
     const LON = 135.7667;
-    // ============================================================
 
-    // Supabaseクライアントを初期化
     const { createClient } = supabase;
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // 現在の天気・日時データを保存する変数
     let currentWeather = '--';
     let currentTemp = null;
+    let visitAlreadySaved = false;
 
-    // ---- 日時表示 ----
     const now = new Date();
     const dateStr = now.toLocaleDateString('ja-JP', {
-      year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long'
     });
     const timeStr = now.toLocaleTimeString('ja-JP', {
-      hour: '2-digit', minute: '2-digit'
+      hour: '2-digit',
+      minute: '2-digit'
     });
-    document.getElementById('timestamp').textContent = `${dateStr}　${timeStr}`;
+    document.getElementById('timestamp').textContent = `${dateStr} ${timeStr}`;
 
-    // バッジID生成
-    const id = 'SEED-USR-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    const id = 'SEED-USR-' + Math.random().toString(36).slice(2, 8).toUpperCase();
     document.getElementById('badge-id').textContent = id;
 
-    // ---- 天気取得 ----
     fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${WEATHER_API_KEY}&units=metric&lang=ja`)
       .then(res => res.json())
       .then(data => {
+        if (!data.main || !data.weather || !data.weather[0]) {
+          throw new Error('Invalid weather response');
+        }
+
         currentTemp = Math.round(data.main.temp);
         currentWeather = data.weather[0].description;
         document.getElementById('temp').textContent = currentTemp + '°';
@@ -405,39 +417,55 @@
         document.getElementById('weather-desc').textContent = '取得できませんでした';
       });
 
-    // ---- 認証状態を確認 ----
-    sb.auth.onAuthStateChange(async (event, session) => {
+    sb.auth.onAuthStateChange(async (_event, session) => {
       if (session) {
-        // ログイン済み
         document.getElementById('auth-section').style.display = 'none';
         document.getElementById('record-section').style.display = 'block';
         await saveVisitAndShowHistory(session.user.id);
       } else {
-        // 未ログイン
+        visitAlreadySaved = false;
         document.getElementById('auth-section').style.display = 'block';
         document.getElementById('record-section').style.display = 'none';
+        document.getElementById('first-visitor-display').innerHTML = '';
+        document.getElementById('visit-count').textContent = '--';
+        document.getElementById('visit-history').innerHTML = '';
       }
     });
 
-    // ---- 来訪記録を保存して履歴を表示 ----
     async function saveVisitAndShowHistory(userId) {
-      // 来訪を記録
-      await sb.from('visits').insert({
-        user_id: userId,
-        place_id: PLACE_ID,
-        visited_at: new Date().toISOString(),
-        weather: currentWeather,
-        temperature: currentTemp
-      });
+      showError('');
+      document.getElementById('first-visitor-display').innerHTML = '';
 
-      // この場所の全来訪記録を取得
-      const { data: allVisits } = await sb
+      if (!visitAlreadySaved) {
+        const { error: insertError } = await sb.from('visits').insert({
+          user_id: userId,
+          place_id: PLACE_ID,
+          visited_at: new Date().toISOString(),
+          weather: currentWeather,
+          temperature: currentTemp
+        });
+
+        if (insertError) {
+          showError('来訪記録を保存できませんでした。');
+          console.error(insertError);
+          return;
+        }
+
+        visitAlreadySaved = true;
+      }
+
+      const { data: allVisits, error: allVisitsError } = await sb
         .from('visits')
         .select('*')
         .eq('place_id', PLACE_ID)
         .order('visited_at', { ascending: true });
 
-      // 初訪者チェック
+      if (allVisitsError) {
+        showError('来訪記録を読み込めませんでした。');
+        console.error(allVisitsError);
+        return;
+      }
+
       if (allVisits && allVisits.length > 0) {
         const firstVisitorId = allVisits[0].user_id;
         if (firstVisitorId === userId) {
@@ -446,80 +474,102 @@
         }
       }
 
-      // 自分の来訪記録を取得
-      const { data: myVisits } = await sb
+      const { data: myVisits, error: myVisitsError } = await sb
         .from('visits')
         .select('*')
         .eq('place_id', PLACE_ID)
         .eq('user_id', userId)
         .order('visited_at', { ascending: false });
 
-      if (myVisits) {
-        document.getElementById('visit-count').textContent = myVisits.length;
-
-        const historyHtml = myVisits.map(v => {
-          const d = new Date(v.visited_at);
-          const dateStr = d.toLocaleDateString('ja-JP', {
-            year: 'numeric', month: 'long', day: 'numeric'
-          });
-          const temp = v.temperature ? `${v.temperature}°` : '--°';
-          const weather = v.weather || '--';
-          return `<div class="record-item">${dateStr}　${temp}　${weather}</div>`;
-        }).join('');
-
-        document.getElementById('visit-history').innerHTML = historyHtml;
+      if (myVisitsError) {
+        showError('あなたの来訪履歴を読み込めませんでした。');
+        console.error(myVisitsError);
+        return;
       }
+
+      document.getElementById('visit-count').textContent = myVisits ? myVisits.length : 0;
+
+      const historyHtml = (myVisits || []).map(v => {
+        const visitedAt = v.visited_at || v.created_at;
+        const d = new Date(visitedAt);
+        const formattedDate = d.toLocaleDateString('ja-JP', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        const temp = v.temperature !== null && v.temperature !== undefined ? `${v.temperature}°` : '--°';
+        const weather = v.weather || '--';
+        return `<div class="record-item">${formattedDate} ${temp} ${weather}</div>`;
+      }).join('');
+
+      document.getElementById('visit-history').innerHTML = historyHtml;
     }
 
-    // ---- Google サインイン ----
     async function signInWithGoogle() {
       const { error } = await sb.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: window.location.href }
       });
+
       if (error) showError(error.message);
     }
 
-    // ---- Apple サインイン ----
     async function signInWithApple() {
       const { error } = await sb.auth.signInWithOAuth({
         provider: 'apple',
         options: { redirectTo: window.location.href }
       });
+
       if (error) showError(error.message);
     }
 
-    // ---- メール サインイン ----
     async function signInWithEmail() {
-      const email = document.getElementById('email-input').value;
+      const email = document.getElementById('email-input').value.trim();
       const password = document.getElementById('password-input').value;
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) showError('メールアドレスまたはパスワードが違います');
-    }
-  
-    // ---- メール 新規登録 ----
-    async function signUpWithEmail() {
-      const email = document.getElementById('email-input').value;
-      const password = document.getElementById('password-input').value;
-      if (password.length < 6) {
-        showError('パスワードは6文字以上にしてください');
+
+      if (!email || !password) {
+        showError('メールアドレスとパスワードを入力してください。');
         return;
       }
-      const { error } = await sb.auth.signUp({ email, password });
-      if (error) showError(error.message);
-      else showError('確認メールを送信しました。メールを確認してください。');
+
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        showError('メールアドレスまたはパスワードが違います。');
+      }
     }
 
-    // ---- サインアウト ----
+    async function signUpWithEmail() {
+      const email = document.getElementById('email-input').value.trim();
+      const password = document.getElementById('password-input').value;
+
+      if (!email) {
+        showError('メールアドレスを入力してください。');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('パスワードは6文字以上にしてください。');
+        return;
+      }
+
+      const { error } = await sb.auth.signUp({ email, password });
+
+      if (error) {
+        showError(error.message);
+      } else {
+        showError('確認メールを送信しました。メールを確認してください。');
+      }
+    }
+
     async function signOut() {
       await sb.auth.signOut();
+      window.location.reload();
     }
 
-    // ---- エラー表示 ----
     function showError(msg) {
       document.getElementById('auth-error').textContent = msg;
     }
   </script>
-
 </body>
 </html>
